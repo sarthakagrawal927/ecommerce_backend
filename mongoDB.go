@@ -2,32 +2,35 @@ package main
 
 import (
 	"context"
-	"log"
 	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"google.golang.org/protobuf/proto"
 )
 
-func getAllUsersFromDB() []UserDetails {
+func getAllUsersFromDB() []byte {
 	defer Recovery()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	cur, err := userDetailsCollection.Find(ctx, bson.M{"active": true})
-	if err != nil {
-		log.Fatal(err)
-	}
-	var users []UserDetails
+	cur, err := userDetailsCollection.Find(ctx, bson.M{})
+	handleError(err)
 	defer cur.Close(ctx)
+	var usersProto []*UserProto
 	for cur.Next(ctx) {
 		var result UserDetails
 		err := cur.Decode(&result)
-		if err != nil {
-			log.Fatal(err)
+		handleError(err)
+		userProto := &UserProto{
+			Name:  result.Name,
+			Age:   int32(result.Age),
+			Email: result.Email,
 		}
-		users = append(users, result)
+		usersProto = append(usersProto, userProto)
 	}
-	return users
+	userListProto, err := proto.Marshal(&UserListProto{Users: usersProto})
+	handleError(err)
+	return userListProto
 }
 
 func getUserByMail(email string) UserDetails {
