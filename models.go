@@ -4,8 +4,10 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"gorm.io/gorm"
 )
 
+// mongoDB
 type UserDetails struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
 	Name      string             `bson:"title,omitempty"`
@@ -14,4 +16,13 @@ type UserDetails struct {
 	Active    bool               `bson:"active,omitempty"`
 	CreatedAt time.Time          `bson:"created_at"`
 	UpdatedAt time.Time          `bson:"updated_at"`
+}
+
+// postgres
+// ID, createdAt, updatedAt are automatically added by gorm
+type User struct {
+	gorm.Model
+	Name  string
+	Email string `gorm:"uniqueIndex"`
+	Age   uint8
 }

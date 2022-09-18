@@ -1,3 +1,3 @@
 package main
 
-var DATABASE_NAME = "test"
+var MONGO_DATABASE_NAME = "test"
