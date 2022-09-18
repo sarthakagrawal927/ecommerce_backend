@@ -8,5 +8,6 @@ func main() {
 	defer dbClient.Disconnect(ctx)
 
 	go initDatabase()
+	go initLogger()
 	startServer()
 }

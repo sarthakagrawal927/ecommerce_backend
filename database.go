@@ -21,8 +21,8 @@ func connectDatabase() (*mongo.Client, context.Context) {
 
 func initDatabase() {
 	database = dbClient.Database(DATABASE_NAME)
-	userCollection = database.Collection("users")
-	userCollection.Indexes().CreateOne(
+	userDetailsCollection = database.Collection("users")
+	userDetailsCollection.Indexes().CreateOne( // create index on email
 		context.Background(),
 		mongo.IndexModel{
 			Keys:    bson.D{{Key: "email", Value: ""}},
@@ -31,18 +31,18 @@ func initDatabase() {
 	)
 }
 
-func getAllUsersFromDB() []User {
+func getAllUsersFromDB() []UserDetails {
 	defer Recovery()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	cur, err := userCollection.Find(ctx, bson.M{"active": true})
+	cur, err := userDetailsCollection.Find(ctx, bson.M{"active": true})
 	if err != nil {
 		log.Fatal(err)
 	}
-	var users []User
+	var users []UserDetails
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
-		var result User
+		var result UserDetails
 		err := cur.Decode(&result)
 		if err != nil {
 			log.Fatal(err)
@@ -52,20 +52,20 @@ func getAllUsersFromDB() []User {
 	return users
 }
 
-func getUserByMail(email string) User {
+func getUserByMail(email string) UserDetails {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	var user User
-	err := userCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	var user UserDetails
+	err := userDetailsCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	handleError(err)
 	defer Recovery()
 	return user
 }
 
-func createUserDB(name string, age string, email string) User {
+func createUserDB(name string, age string, email string) UserDetails {
 	ageInt, err := strconv.ParseInt(age, 10, 16)
 	handleError(err)
-	user := User{
+	user := UserDetails{
 		Name:   name,
 		Age:    int16(ageInt),
 		Email:  email,
@@ -73,7 +73,7 @@ func createUserDB(name string, age string, email string) User {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err = userCollection.InsertOne(ctx, user)
+	_, err = userDetailsCollection.InsertOne(ctx, user)
 	handleError(err)
 	return user
 }
@@ -81,7 +81,7 @@ func createUserDB(name string, age string, email string) User {
 func deleteUserByEmailDB(email string) int64 {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	res, err := userCollection.UpdateOne(ctx, bson.M{"email": email}, bson.M{"$set": bson.M{"active": false}})
+	res, err := userDetailsCollection.UpdateOne(ctx, bson.M{"email": email}, bson.M{"$set": bson.M{"active": false}})
 	handleError(err)
 	return res.UpsertedCount
 }

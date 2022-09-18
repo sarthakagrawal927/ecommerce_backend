@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -32,5 +31,5 @@ func createUser(c echo.Context) error {
 func deleteUserByEmail(c echo.Context) error {
 	defer Recovery()
 	deleteCount := deleteUserByEmailDB(c.FormValue("email"))
-	return c.String(http.StatusOK, fmt.Sprintf("Deleted Count: %d", deleteCount))
+	return c.JSON(http.StatusOK, deleteCount)
 }

@@ -1,7 +1,11 @@
 package main
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.uber.org/zap"
+)
 
 var dbClient *mongo.Client
 var database *mongo.Database
-var userCollection *mongo.Collection
+var userDetailsCollection *mongo.Collection
+var logger *zap.Logger
