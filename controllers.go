@@ -18,7 +18,7 @@ func getUser(c echo.Context) error {
 
 func getUsers(c echo.Context) error {
 	defer Recovery()
-	users := getAllUsersFromDB()
+	users := getAllUsers()
 	return c.Blob(http.StatusOK, "text/csv", users)
 }
 

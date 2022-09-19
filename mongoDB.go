@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// rewrite this to take postgresData
+// @deprecated
 func getAllUsersFromDB() []byte {
 	defer Recovery()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

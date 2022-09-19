@@ -3,6 +3,7 @@ module github.com/sarthakagrawal927/ecommerce.git
 go 1.18
 
 require (
+	github.com/golang/protobuf v1.5.0
 	github.com/labstack/echo v3.3.10+incompatible
 	go.mongodb.org/mongo-driver v1.10.2
 	go.uber.org/zap v1.23.0
