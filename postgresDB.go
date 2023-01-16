@@ -22,7 +22,7 @@ func getAllUsers() []byte {
 	var users []User
 	postgresDB.Find(&users)
 	var usersProto []*UserProto
-	for i, _ := range users {
+	for i := range users {
 		userProto := &UserProto{
 			Name:   users[i].Name,
 			Age:    int32(users[i].Age),
